@@ -1,20 +1,41 @@
+# myapp/pipeline.py
+
+class PipelineStep:
+    def execute(self, data):
+        raise NotImplementedError("Each step must define an execute method.")
+
+class PrintStep(PipelineStep):
+    def __init__(self, message):
+        self.message = message
+
+    def execute(self, data):
+        print(self.message)  # Or accumulate messages in a list to show in the web
+        return data + self.message + "\n"
+
+class ModifyStep(PipelineStep):
+    def __init__(self, append_text):
+        self.append_text = append_text
+
+    def execute(self, data):
+        return data + self.append_text + "\n"
+
+# Map of allowed steps and their corresponding classes
+step_classes = {
+    'PrintStep': PrintStep,
+    'ModifyStep': ModifyStep,
+}
+
 def process_script(script):
     steps = parse_script(script)
-    results = []
+    data = ""  # Initial data passed through the pipeline
     for step in steps:
-        result = execute_step(step)
-        results.append(result)
-    return results
+        step_type, args = step.split(':', 1)
+        step_class = step_classes.get(step_type.strip())
+        if step_class:
+            step_instance = step_class(args.strip())
+            data = step_instance.execute(data)
+    return data
 
 def parse_script(script):
-    # This function needs to parse the script into executable steps
-    # For now, we'll mock this as a simple split by new lines
+    # Each step is on a new line
     return script.strip().split('\n')
-
-def execute_step(step):
-    # Execute a step. You might use exec, but be careful with security issues!
-    # Here, we'll just mock the execution.
-    # In production, you would use a safe environment for this, like a sandbox.
-    local_scope = {}
-    exec(step, {'__builtins__': {}}, local_scope)
-    return local_scope.get('result', None)

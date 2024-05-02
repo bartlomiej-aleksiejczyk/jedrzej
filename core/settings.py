@@ -10,22 +10,42 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+import os
 from pathlib import Path
+from django.core.exceptions import ImproperlyConfigured
+
+def get_env_variable(var_name, default=None):
+    """ Get the environment variable or return exception """
+    try:
+        return os.getenv(var_name) if default is None else os.getenv(var_name, default)
+    except KeyError:
+        if default is None:
+            error_msg = f'Set the {var_name} environment variable'
+            raise ImproperlyConfigured(error_msg)
+        return default
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-3n7x3xs1u+e(z$e(x!m&p2$w2$2#+%s)@($_4$d7cog-n+(j8o'
+SECRET_KEY = get_env_variable('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = get_env_variable('DEBUG') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = get_env_variable('ALLOWED_HOSTS', '').split(',')
+
+# Database configuration
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': get_env_variable('DB_NAME'),
+        'USER': get_env_variable('DB_USER'),
+        'PASSWORD': get_env_variable('DB_PASS'),
+        'HOST': get_env_variable('DB_HOST', 'localhost'),  # Default to localhost if not specified
+        'PORT': get_env_variable('DB_PORT', '5432'),  # Default to 5432 if not specified
+    }
+}
 
 
 # Application definition
@@ -37,6 +57,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'core',
+    'scriptedpipeline',
 ]
 
 MIDDLEWARE = [
@@ -54,7 +76,7 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

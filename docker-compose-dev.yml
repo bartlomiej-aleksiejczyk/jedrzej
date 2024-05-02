@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   db:
     image: postgres:13
@@ -17,7 +19,9 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DEBUG=1
+      - SECRET_KEY=django-insecure-3n7x3xs1u+e(z$e(x!m&p2$w2$2#+%s)@($_4$d7cog-n+(j8o
+      - DEBUG=True
+      - ALLOWED_HOSTS=*
       - DB_HOST=db
       - DB_NAME=yourdbname
       - DB_USER=youruser
