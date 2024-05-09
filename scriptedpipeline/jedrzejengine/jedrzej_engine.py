@@ -80,15 +80,7 @@ class Script:
                     yield error_msg
                     break
 
-
-# Example usage
-env_variables = {
-    'ENV_VAR_1': 'value1',
-    'ENV_VAR_2': 'value2',
-    'global_var': 123
-}
-
-code_to_execute = """
+sample_code_to_execute = """
 import time 
 class MyScript(Script):
     def setup_steps(self):
@@ -106,5 +98,3 @@ class MyScript(Script):
         time.sleep(1)  # Simulate a delay of 1 second
         return "step2 success"
 """
-
-execute_string(code_to_execute, env_variables)
