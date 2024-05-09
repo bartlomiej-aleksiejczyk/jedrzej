@@ -1,7 +1,6 @@
-from dotenv import dotenv_values
 import ast
 import importlib
-
+import os
 
 def execute_string(code_string, env_variables):
     try:
@@ -20,9 +19,7 @@ def execute_string(code_string, env_variables):
         if class_def is None:
             raise ValueError("No class named MyScript found.")
 
-        local_namespace = {}
-        local_namespace['Script'] = Script
-        local_namespace['dotenv_values'] = dotenv_values
+        local_namespace = {'Script': Script, 'dotenv_values': os.environ}
         local_namespace.update(env_variables)
 
         for imp in imports:
