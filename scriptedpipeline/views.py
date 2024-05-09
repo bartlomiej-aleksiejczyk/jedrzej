@@ -3,12 +3,13 @@ from django.http import HttpResponse
 from .forms import ScriptForm
 from .jedrzejengine import execute_string
 
+
 def script_input(request):
     if request.method == 'POST':
         form = ScriptForm(request.POST)
         if form.is_valid():
-            code_string = form.cleaned_data['script_code']
-            #env_variables = dotenv_values()
+            code_string = form.cleaned_data['script']
+            # env_variables = dotenv_values()
             env_variables = {
                 'ENV_VAR_1': 'value1',
                 'ENV_VAR_2': 'value2',
